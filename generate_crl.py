@@ -193,7 +193,11 @@ def main():
     
     # Generate CRL with Certificate Issuer extension, updating existing CRL if it exists
     crl = generator.generate_crl(
-        revoked_certs=[(revoked_cert1, revocation_date, alt_issuer_name), (revoked_cert2, revocation_date, None), (revoked_cert3, revocation_date, None)],
+        revoked_certs=[
+            (revoked_cert1, revocation_date, revoked_cert1.issuer),
+            (revoked_cert2, revocation_date, None),
+            (revoked_cert3, revocation_date, None)
+        ],
         existing_crl_path=existing_crl_path,
         # next_update_days=365,
         # include_issuing_distribution_point=True,
