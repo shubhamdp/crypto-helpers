@@ -66,8 +66,8 @@ class MatterCertGenerator:
         self.ca_cert = load_cert(ca_cert) if ca_cert else None
         self.ca_key = load_key(ca_key) if ca_key else None
 
-        self.ca_vid = str(ca_vid)
-        self.ca_pid = str(ca_pid)
+        self.ca_vid = str(ca_vid) if ca_vid else None
+        self.ca_pid = str(ca_pid) if ca_pid else None
 
     def set_vid(self, vid):
         self.ca_vid = str(vid)
