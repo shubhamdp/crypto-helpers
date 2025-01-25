@@ -9,42 +9,17 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.x509 import CertificateRevocationList, RevokedCertificate, Name
 import os
 
+from loader import load_cert_from_file
+from loader import load_key_from_file
+from loader import load_crl_from_file
+
+
 class CRLGenerator:
     def __init__(self, issuer_cert_path: str, issuer_key_path: str):
         """Initialize CRL Generator with issuer certificate and private key."""
-        self.issuer_cert = self._load_certificate(issuer_cert_path)
-        self.issuer_key = self._load_private_key(issuer_key_path)
+        self.issuer_cert = load_cert_from_file(issuer_cert_path)
+        self.issuer_key = load_key_from_file(issuer_key_path)
         
-    def _load_certificate(self, cert_path: str) -> x509.Certificate:
-        """Load a certificate from PEM or DER file."""
-        with open(cert_path, 'rb') as f:
-            cert_data = f.read()
-            try:
-                return x509.load_pem_x509_certificate(cert_data)
-            except ValueError:
-                return x509.load_der_x509_certificate(cert_data)
-
-    def _load_private_key(self, key_path: str) -> rsa.RSAPrivateKey:
-        """Load a private key from PEM or DER file."""
-        with open(key_path, 'rb') as f:
-            key_data = f.read()
-            try:
-                return serialization.load_pem_private_key(key_data, password=None)
-            except ValueError:
-                return serialization.load_der_private_key(key_data, password=None)
-
-    def _load_crl(self, crl_path: str) -> Optional[CertificateRevocationList]:
-        """Load a CRL from PEM or DER file."""
-        if not os.path.exists(crl_path):
-            return None
-        
-        with open(crl_path, 'rb') as f:
-            crl_data = f.read()
-            try:
-                return x509.load_pem_x509_crl(crl_data)
-            except ValueError:
-                return x509.load_der_x509_crl(crl_data)
-
     def _get_crl_number(self, crl: Optional[CertificateRevocationList]) -> int:
         """Get the CRL number from an existing CRL or return 0."""
         if crl is None:
@@ -82,7 +57,7 @@ class CRLGenerator:
         # Load existing CRL if provided
         existing_crl = None
         if existing_crl_path:
-            existing_crl = self._load_crl(existing_crl_path)
+            existing_crl = load_crl_from_file(existing_crl_path)
         
         # Get set of existing serial numbers
         existing_serials = self._get_existing_serial_numbers(existing_crl)
@@ -183,9 +158,9 @@ def main():
     generator = CRLGenerator(issuer_cert_path, issuer_key_path) # This is delegated crl signer
     
     # Load revoked certificate
-    revoked_cert1 = generator._load_certificate(revoked_cert_path1)
-    revoked_cert2 = generator._load_certificate(revoked_cert_path2)
-    revoked_cert3 = generator._load_certificate(revoked_cert_path3)
+    revoked_cert1 = load_cert_from_file(revoked_cert_path1)
+    revoked_cert2 = load_cert_from_file(revoked_cert_path2)
+    revoked_cert3 = load_cert_from_file(revoked_cert_path3)
     revocation_date = datetime.datetime.utcnow()
     
     # Example with Certificate Issuer extension

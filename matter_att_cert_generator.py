@@ -29,31 +29,11 @@ from typing import Optional
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '.'))
 import MatterOID  # noqa: E402 isort:skip
 
+from loader import load_key
+from loader import load_cert
+from loader import load_csr
+
 VALID_DAYS = 365 * 100
-
-def load_cert(cert):
-    try:
-        return x509.load_pem_x509_certificate(cert)
-    except:
-        pass  # fall back to DER
-
-    return x509.load_der_x509_certificate(cert)
-
-def load_key(key):
-    try:
-        return serialization.load_pem_private_key(key, password=None)
-    except:
-        pass  # fall back to DER
-
-    return serialization.load_der_private_key(key, password=None)
-
-def load_csr(csr):
-    try:
-        return x509.load_pem_x509_csr(csr)
-    except:
-        pass  # fall back to DER
-
-    return x509.load_der_x509_csr(csr)
 
 # I think we need a constructor or a fn to set the ca cert, ca key, ca vid, ca pid
 # also, we should have some functionality which would self generate the csr and key
